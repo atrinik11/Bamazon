@@ -61,41 +61,15 @@ function productForSale() {
         //console.log(productDisplay);
                 
         for(i = 0; i < productDisplay.length; i++){
-
-            //console.log("Department: " + productDisplay[i].Department_name);
-            if(productDisplay[i].Department_name === "Wearable Technology"){
-                console.log("Department: " + productDisplay[i].Department_name);
-                displayProduct();
-            } else if (productDisplay[i].Department_name === "Movies & TV"){
-                console.log("Department: " + productDisplay[i].Department_name);
-                displayProduct();
-            }else if (productDisplay[i].Department_name === "Video Games"){
-                console.log("Department: " + productDisplay[i].Department_name);
-                displayProduct();
-            } else if (productDisplay[i].Department_name === "Beauty & Personal Care"){
-                console.log("Department: " + productDisplay[i].Department_name);
-                displayProduct();
-            }else if(productDisplay[i].Department_name === "Toys & Games"){
-                console.log("Department: " + productDisplay[i].Department_name);
-                displayProduct();
-            } else {
-                console.log("Department: " + productDisplay[i].Department_name);
-              displayProduct();
-            }
+            console.log("\n"+
+                "       Item_id: " + productDisplay[i].item_id  +
+                "    ||   Product Name: " + productDisplay[i].Product_name + 
+                "    ||   Department Name: " + productDisplay[i].Department_name +
+                "    ||   Price: $" + productDisplay[i].Price +
+                "    ||   Stock: " + productDisplay[i].Stock_quantity+"\n"
+            );
         }
         returnToMenu();
-        function displayProduct(){
-            //console.log("Department: " + productDisplay[i].Department_name + "\n");
-            //for (var i = 0; i < productDisplay.length; i++){
-                console.log("==========================================================================================="+"\n"+"\n"+
-                "       Item_id: " + productDisplay[i].item_id + "\n" +
-                "       Product Name: " + productDisplay[i].Product_name + "\n" +
-                "       Price: $" + productDisplay[i].Price + "\n" +
-                "       Stock: " + productDisplay[i].Stock_quantity+"\n"+ "\n"+
-                "=========================================================================================="+"\n"
-                );
-            //}
-        }
     });
 
 }
@@ -110,7 +84,7 @@ function lowInventory() {
             console.log("There are sufficient stock");
             returnToMenu();
         } else{
-            console.log("\n" + "The following products are low in quantity:" + "\n");
+            console.log("\n" + "*******The following products are low in quantity:*******" + "\n");
             for(var i = 0; i < response.length; i++) {
                 console.log("\n"+ 
                 "==========================================================================================="+"\n"+"\n"+
@@ -176,15 +150,17 @@ function newProduct() {
         var price = input.Price;
         var quantity = input.Stock_quantity;
         console.log("\n" + "====================================================="+"\n"+
-        "Adding new product: \n ---------------------------------------- " +"\n" + "       Product_name: " + product + "\n" +
+        "       Adding new product: \n -------------------------------------------------- " +"\n" + 
+        "       Product_name: " + product + "\n" + 
         "       Department_name: " + dept + "\n" +
         "       Price: $" + price + "\n" +
         "       Stock_quantity: " + quantity + "\n" + "======================================================");
         var addProduct = "INSERT INTO products(Product_name, Department_name, Price, Stock_quantity) VALUES(?,?,?,?)";
 
-        connection.query(addProduct, {Product_name: product, Department_name: dept, Price: price, Stock_quantity: quantity}, function(error, response){ //HERE IS THE ERROR
+        connection.query(addProduct, [product, dept, price, quantity], function(error, response){
             if(error) throw error;
-            console.log("New product has been added to the product inventory with the item_id: " + response[0].item_id);
+            //console.log(response);
+            console.log("       New product has been added to the product inventory with the item_id: " + response.insertId + "\n---------------------------------------------------------------------------------\n");
             returnToMenu();
         });
     });
@@ -219,20 +195,23 @@ function addQuantity() {
         }]).then(function(answer) {
 
             var item = answer.item_id;
-            var quantity = answer.quantity;
+            var quantity = parseInt(answer.quantity);
             var query = "SELECT * FROM products WHERE ?";
             
             connection.query(query, {item_id : item}, function(error, response){
                 if(error) throw error;
+                //console.log(response.item_id);
 
-                if(response.length === 0) {
-                    console.log("       Invalid Id. Pls enter a valid item_id.");
+                if(response.length === 0 ) {
+                    console.log("*******Invalid Id. Pls enter a valid item_id.*******");
                     runManagerAction();
                 } else {
                     var productDetail = response;
-                    console.log("\n" + "Product to be updated: " + productDetail[0].Product_name + "\n" +
-                    "Stock available: " + productDetail[0].Stock_quantity + "\n" +
-                    "Quantity to be added: " + quantity);
+                    console.log("\n------------------------------------------\n"+ 
+                    "       Product to be updated: " + productDetail[0].Product_name + "\n" +
+                    "       Stock available: " + productDetail[0].Stock_quantity + "\n" +
+                    "       Quantity to be added: " + quantity +
+                    "\n----------------------------------------");
                     
                     inquirer.prompt({
                         name : "action",
@@ -247,15 +226,17 @@ function addQuantity() {
                             case "Yes" :
                                 //code here;
                                 //var updateQuantity =  productDetail[0].Stock_quantity + quantity;
-                                var updateStockQuantity = "UPDATE products SET Stock_quantity = " + (productDetail[0].Stock_quantity + quantity) + "WHERE item_id = " + item;
+                                //console.log("productDetail: " + productDetail[0].Stock_quantity);
+                                var updateStockQuantity = "UPDATE products SET stock_quantity = " + (productDetail[0].Stock_quantity + quantity) + " WHERE item_id = " + item;
+                                //console.log(updateStockQuantity);
 
-                                console.log("stock: " + productDetail[0].Stock_quantity + "\n"+ 
-                                "quantity: " + quantity);
-                                connection.query(updateStockQuantity, function(error, response) { ///ERROR IS HERE
+                                //console.log("stock: " + productDetail[0].Stock_quantity + "\n"+ 
+                                //"quantity: " + quantity);
+                                connection.query(updateStockQuantity, function(error, response) {
                                     var updatedStock = response;
                                     if(error) throw error;
-                                    console.log(updatedStock[0]);
-                                    console.log((updatedStock[0].Stock_quantity) + " Stock are available for the item id: " + item );
+                                    //console.log(updatedStock[0]);
+                                    console.log("\n-------------------------------------------------------------\n" + "       New Stock available for the item id: " + item + " is "+  (productDetail[0].Stock_quantity + quantity) + "\n-------------------------------------------------------------");
                                     returnToMenu();
                                 });
                             break;

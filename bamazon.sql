@@ -76,14 +76,5 @@ INSERT INTO products(Product_name, Department_name, Price, Stock_quantity)
 VALUES ("JOLLY Rancher Hard Candy", "Chocolates & Candys", 11.99, 100);
 
 
---  Creating table departments which will hold all the department details
-CREATE TABLE departments(
-    department_id INTEGER(10) AUTO_INCREMENT NOT NULL,
-    Department_name VARCHAR(100) NOT NULL,
-    Over_head_costs INTEGER(10) NOT NULL,
-    PRIMARY KEY(department_id)
-);
 
--- Modifying the products table: adding a new column product_sales
-ALTER TABLE products ADD COLUMN Product_sales INTEGER AFTER Stock_quantity;
 
