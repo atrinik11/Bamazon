@@ -84,3 +84,6 @@ https://drive.google.com/file/d/1DU54B7RNgdbg2vYwHo-H5-32vl7NdhLx/view?usp=shari
 
 Link for the bamazonManager.js:
 https://drive.google.com/file/d/1XbzDbbRLyR8r4ZLSgCq7qbtP68OWVBVF/view?usp=sharing
+
+Link to my portfolio:
+https://atrinik11.github.io/Bootstrap-Portfolio/
