@@ -1,12 +1,13 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var table = require("console.table");
 
 //Defining the mySQL connection parameters..............
 var connection = mysql.createConnection({
     host : "localhost",
     port : 3306,
     user : "root",
-    password : "",
+    password : "bootcampsql123",
     database : "bamazon"
 });
 
@@ -57,18 +58,19 @@ function productForSale() {
 
     connection.query(query, function(error, response) {
         var productDisplay = response;
+        var inventory = [];
         if(error) throw error;
         //console.log(productDisplay);
-                
         for(i = 0; i < productDisplay.length; i++){
-            console.log("\n"+
-                "       Item_id: " + productDisplay[i].item_id  +
-                "    ||   Product Name: " + productDisplay[i].Product_name + 
-                "    ||   Department Name: " + productDisplay[i].Department_name +
-                "    ||   Price: $" + productDisplay[i].Price +
-                "    ||   Stock: " + productDisplay[i].Stock_quantity+"\n"
-            );
+            inventory.push({
+                "Item_id" : productDisplay[i].item_id,
+                "Product Name" : productDisplay[i].Product_name, 
+                "Department Name" : productDisplay[i].Department_name,
+                "Price: $" : productDisplay[i].Price ,
+                "Stock" : productDisplay[i].Stock_quantity
+            });
         }
+        console.table(inventory);
         returnToMenu();
     });
 
@@ -85,16 +87,16 @@ function lowInventory() {
             returnToMenu();
         } else{
             console.log("\n" + "*******The following products are low in quantity:*******" + "\n");
+            var low = [];
             for(var i = 0; i < response.length; i++) {
-                console.log("\n"+ 
-                "==========================================================================================="+"\n"+"\n"+
-                "       Item_id: " + response[i].item_id + "\n" +
-                "       Product Name: " + response[i].Product_name + "\n" +
-                "       Price: $" + response[i].Price + "\n" +
-                "       Stock: " + response[i].Stock_quantity+"\n"+ "\n"+
-                "=========================================================================================="
-                );
+                low.push({
+                    "Item_id" : response[i].item_id,
+                "Product Name" : response[i].Product_name,
+                "Price: $" : response[i].Price,
+                "Stock" : response[i].Stock_quantity
+                });                
             }
+            console.table(low);
         returnToMenu();
         }
     });

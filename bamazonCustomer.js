@@ -1,12 +1,12 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-//import Table from "cli-table";
+var table = require("console.table");
 
 var connection = mysql.createConnection({
     host : "localhost",
     port : 3306,
     user : "root",
-    password : "",
+    password : "bootcampsql123",
     database : "bamazon"
 });
 
@@ -19,20 +19,19 @@ connection.connect(function(error) {
 //Creating a menu function which will be displayed when the js file in runned in the command line........
 function runMenu() {
     var query = "SELECT * FROM products";
+    var inventory = [];
     connection.query(query,function(error, response) {
         if (error) throw error;
-        console.log("************************************************************************************************************************\n");
         for(var i = 0; i < response.length; i++){
-            console.log(
-                "\n"+
-                "       Item_id: " + response[i].item_id + 
-                "   || Product Name: " + response[i].Product_name + 
-                "   || Department Name: " + response[i].Department_name +
-                "   || Price: $ " + response[i].Price +
-                "   || Stock: " + response[i].Stock_quantity+"\n"
-            );
+            inventory.push({
+                "Item_id" : response[i].item_id, 
+                "Product Name" : response[i].Product_name, 
+                "Department Name" : response[i].Department_name,
+                "Price: $" : response[i].Price,
+                "Stock" : response[i].Stock_quantity
+            });
         }      
-        console.log("\n**********************************************************************************************************************\n");
+        console.table(inventory);
         //Calling the userOrderInput function to carry out the transaction process..
         userOrderInput();
     });         
@@ -77,17 +76,19 @@ function userOrderInput(response) {
                         runMenu();
                 } else {
                     if(quantity > response[0].Stock_quantity) {
-                        console.log("\n----------------------------------------------------------------------------------------------------------------------------------------\n" + "       Your Product is out of stock, pls come back latter to place order or modify your order. Sorry for the inconvinience" +
+                        console.log("\n----------------------------------------------------------------------------------------------------------------------------------------\n" + "       Your Product is out of stock, pls come back later to place order or modify your order. Sorry for the inconvinience" +
                         "\n----------------------------------------------------------------------------------------------------------------------------------------");
                         afterOrder();
                     } else {
                         var productDetail = response;
-                        console.log("\n");
-                        //console.log("User requires: " + quantity + " quantity products.");
-                        console.log("       Product name: " + productDetail[0].Product_name);
-                        console.log("       Product price: $ " + productDetail[0].Price);
-                        console.log("       In stock: " + productDetail[0].Stock_quantity + " quantities");                       
+                        var order = [];
+                        order.push({
+                            "Product name" : productDetail[0].Product_name,
+                            "Product price: $" : productDetail[0].Price,
+                            "In stock" : (productDetail[0].Stock_quantity + " quantities")
+                        });
                         console.log("       Your product is in stock! You can place your order!");
+                        console.table(order);
     
                         inquirer.prompt({
                             name : "action",
